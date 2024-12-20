@@ -7,21 +7,65 @@
             <h1 class="text-primary">✨ CHÀO MỪNG ĐẾN VỚI TRANG QUẢN TRỊ ✨</h1>
             <h2 class="text-success mt-3">Xin chào, <span class="fw-bold">{{ current_user.username }}</span>!</h2>
         </div>
+    <div class="row">
+        <div class="col-md-7 col-12">
+            <table class="table">
+                <tr>
+                    <th>Id</th>
+                    <th>Flight Route</th>
+                    <th>Quantity</th>
+                </tr>
+                {% for s in stats %}
+                <tr>
+                    <td>{{ s[0] }}</td>
+                    <td>{{ s[1] }}</td>
+                    <td>{{ "{:,.0f}".format(s[2]) }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div class="col-md-5 col-12">
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    let data = [];
+        let labels = [];
+
+
+        {% for s in stats %}
+        data.push({{ s[2] }})
+        labels.push('{{ s[1] }}')
+        {% endfor %}
+
+        window.onload = function() {
+        const ctx = document.getElementById('myChart');
+        new Chart(ctx, {
+                type: 'pie',
+                data: {
+                  labels: labels,
+                  datasets: [{
+                label: '# Quantity',
+                    data: data,
+                    borderWidth: 1,
+                    backgroundColor: ["red", "green", "blue", "gold"]
+                  }]
+                },
+                options: {
+                  scales: {
+                    y: {
+                      beginAtZero: true
+                    }
+                  }
+                }
+              });
+        }
+    </script>
     {% else %}
         <div class="text-center">
             <h1 class="text-info mt-3">🔒 ĐĂNG NHẬP QUẢN TRỊ 🔒</h1>
         </div>
-
-        <!-- Hiển thị thông báo lỗi -->
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="alert alert-danger mt-3">
-                    {% for category, message in messages %}
-                        <p class="mb-0">{{ message }}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
 
         <div class="row justify-content-center mt-5">
             <div class="col-md-6 col-sm-12">
